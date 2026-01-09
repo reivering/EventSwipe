@@ -8,6 +8,11 @@
   body {
     @apply bg-white text-black font-sans;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body.dark {
+    @apply bg-black text-white;
   }
 
   * {
@@ -18,20 +23,49 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-black text-white font-bold px-8 py-4 border-5 border-black uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-100;
+    @apply bg-black text-white font-bold px-8 py-4 border-5 border-black uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-200;
+  }
+
+  .dark .btn-primary {
+    @apply bg-white text-black border-white hover:bg-black hover:text-white;
   }
 
   .btn-secondary {
-    @apply bg-white text-black font-bold px-8 py-4 border-5 border-black uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-100;
+    @apply bg-white text-black font-bold px-8 py-4 border-5 border-black uppercase tracking-wider hover:bg-black hover:text-white transition-all duration-200;
+  }
+
+  .dark .btn-secondary {
+    @apply bg-black text-white border-white hover:bg-white hover:text-black;
   }
 
   .card {
     @apply bg-white border-5 border-black overflow-hidden;
   }
 
-  .brutalist-box {
-    @apply border-5 border-black bg-white;
+  .dark .card {
+    @apply bg-black border-white;
   }
+
+  .brutalist-box {
+    @apply border-5 border-black bg-white transition-all duration-200;
+  }
+
+  .dark .brutalist-box {
+    @apply border-white bg-black;
+  }
+}
+
+/* Parallax animations */
+.parallax-slow {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.parallax-medium {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.parallax-fast {
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Swipe animations - simplified for brutalist aesthetic */
@@ -57,6 +91,106 @@
   }
 }
 
+/* Glitch animation for dark mode */
+@keyframes glitch {
+
+  0%,
+  100% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  40% {
+    transform: translate(-2px, -2px);
+  }
+
+  60% {
+    transform: translate(2px, 2px);
+  }
+
+  80% {
+    transform: translate(2px, -2px);
+  }
+}
+
+.glitch-effect {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* Fade in animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Stagger delays for multiple elements */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+/* Star twinkling animation */
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* Page transition animations */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-transition {
+  animation: pageSlideIn 0.3s ease-out;
+}
+
 /* Custom scrollbar - brutalist style */
 ::-webkit-scrollbar {
   width: 12px;
@@ -67,11 +201,42 @@
   border-left: 3px solid #000000;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #000000;
+  border-left: 3px solid #ffffff;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #000000;
   border: 2px solid #ffffff;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border: 2px solid #000000;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #000000;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #ffffff;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+
+  .btn-primary,
+  .btn-secondary {
+    @apply px-6 py-3 text-base;
+  }
+
+  .brutalist-box {
+    @apply border-3;
+  }
+
+  .card {
+    @apply border-3;
+  }
 }
