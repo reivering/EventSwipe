@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
 import { Calendar, MapPin, DollarSign, Users, Info } from 'lucide-react';
@@ -6,8 +6,14 @@ import { format } from 'date-fns';
 
 const SwipeCard = ({ event, onSwipeLeft, onSwipeRight, onShowDetails, style, isTop }) => {
   const [gone, setGone] = useState(false);
-  const [direction, setDirection] = useState(null);
+  const hasSwipedRef = useRef(false);
   const isDark = document.body.classList.contains('dark');
+
+  // Reset hasSwipedRef when event changes or when card becomes top
+  useEffect(() => {
+    hasSwipedRef.current = false;
+    setGone(false);
+  }, [event.id, isTop]);
 
   const [{ x, y, scale }, api] = useSpring(() => ({
     x: 0,
@@ -16,21 +22,33 @@ const SwipeCard = ({ event, onSwipeLeft, onSwipeRight, onShowDetails, style, isT
   }));
 
   const bind = useDrag(
-    ({ movement: [mx, my], velocity: [vx], direction: [dx], down, cancel }) => {
+    ({ movement: [mx, my], velocity: [vx], direction: [dx], down, cancel, last }) => {
+      // Only allow swiping if this is the top card and hasn't been swiped yet
+      if (!isTop || hasSwipedRef.current) {
+        return;
+      }
+
       const trigger = Math.abs(mx) > 200 || Math.abs(vx) > 0.5;
       const dir = dx < 0 ? -1 : 1;
 
-      if (!down && trigger) {
-        setGone(true);
-        setDirection(dir);
+      // Only process on the LAST event of the gesture (when finger/mouse is released)
+      if (last && trigger && !gone) {
+        // Mark as swiped IMMEDIATELY to prevent any duplicate calls
+        if (hasSwipedRef.current) {
+          console.log('Blocked duplicate swipe in handler');
+          return;
+        }
 
-        setTimeout(() => {
-          if (dir === 1) {
-            onSwipeRight(event.id);
-          } else {
-            onSwipeLeft(event.id);
-          }
-        }, 200);
+        hasSwipedRef.current = true;
+        setGone(true);
+
+        // Call the swipe handler
+        console.log('SwipeCard calling handler for event:', event.id, 'direction:', dir === 1 ? 'right' : 'left');
+        if (dir === 1) {
+          onSwipeRight(event.id);
+        } else {
+          onSwipeLeft(event.id);
+        }
       }
 
       api.start({
@@ -77,20 +95,20 @@ const SwipeCard = ({ event, onSwipeLeft, onSwipeRight, onShowDetails, style, isT
           {/* Swipe Indicators */}
           <animated.div
             style={{ opacity: likeOpacity }}
-            className="absolute top-6 sm:top-8 right-6 sm:right-8 bg-white text-black border-5 border-black px-4 sm:px-8 py-2 sm:py-4 font-bold text-lg sm:text-2xl uppercase tracking-wider"
+            className="absolute top-6 sm:top-8 right-6 sm:right-8 bg-white text-black border-5 border-black px-4 sm:px-8 py-2 sm:py-4 font-bold text-lg sm:text-2xl uppercase tracking-wider pointer-events-none"
           >
             INTERESTED ✓
           </animated.div>
 
           <animated.div
             style={{ opacity: nopeOpacity }}
-            className="absolute top-6 sm:top-8 left-6 sm:left-8 bg-black text-white border-5 border-white px-4 sm:px-8 py-2 sm:py-4 font-bold text-lg sm:text-2xl uppercase tracking-wider"
+            className="absolute top-6 sm:top-8 left-6 sm:left-8 bg-black text-white border-5 border-white px-4 sm:px-8 py-2 sm:py-4 font-bold text-lg sm:text-2xl uppercase tracking-wider pointer-events-none"
           >
             SKIP ✗
           </animated.div>
 
           {/* Event Info Overlay */}
-          <div className={`absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white border-t-5 transition-colors duration-300 ${isDark ? 'border-white bg-black' : 'border-white bg-black'
+          <div className={`absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white border-t-5 transition-colors duration-300 pointer-events-none ${isDark ? 'border-white bg-black' : 'border-white bg-black'
             }`}>
             <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 uppercase tracking-tight line-clamp-2">
               {event.title}
@@ -136,9 +154,11 @@ const SwipeCard = ({ event, onSwipeLeft, onSwipeRight, onShowDetails, style, isT
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onShowDetails(event);
+              if (isTop) {
+                onShowDetails(event);
+              }
             }}
-            className="absolute top-4 sm:top-6 right-4 sm:right-6 bg-white text-black border-3 border-black p-2 sm:p-3 hover:bg-black hover:text-white hover:border-white transition-all duration-200"
+            className="absolute top-4 sm:top-6 right-4 sm:right-6 bg-white text-black border-3 border-black p-2 sm:p-3 hover:bg-black hover:text-white hover:border-white transition-all duration-200 pointer-events-auto"
           >
             <Info className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={3} />
           </button>

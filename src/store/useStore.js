@@ -34,8 +34,16 @@ const useStore = create(
       setUser: (userData) => set({ user: { ...get().user, ...userData } }),
 
       swipeRight: (eventId) => {
-        const event = get().allEvents.find(e => e.id === eventId);
-        if (event && !get().savedEvents.find(e => e.id === eventId)) {
+        const state = get();
+        const event = state.allEvents.find(e => e.id === eventId);
+
+        // Prevent double processing
+        if (state.skippedEvents.includes(eventId) || state.savedEvents.find(e => e.id === eventId)) {
+          console.log('Event already processed:', eventId);
+          return;
+        }
+
+        if (event) {
           set(state => ({
             savedEvents: [...state.savedEvents, event],
             currentEventIndex: state.currentEventIndex + 1,
@@ -44,6 +52,14 @@ const useStore = create(
       },
 
       swipeLeft: (eventId) => {
+        const state = get();
+
+        // Prevent double processing
+        if (state.skippedEvents.includes(eventId) || state.savedEvents.find(e => e.id === eventId)) {
+          console.log('Event already processed:', eventId);
+          return;
+        }
+
         set(state => ({
           skippedEvents: [...state.skippedEvents, eventId],
           currentEventIndex: state.currentEventIndex + 1,

@@ -76,6 +76,7 @@ function AnimatedRoutes() {
             >
               <Navigation />
               <SavedEvents />
+              <EventModal />
             </motion.div>
           }
         />
@@ -90,6 +91,7 @@ function AnimatedRoutes() {
             >
               <Navigation />
               <Profile />
+              <EventModal />
             </motion.div>
           }
         />

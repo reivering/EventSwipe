@@ -1,5 +1,6 @@
 import React from 'react';
 import useStore from '../store/useStore';
+import StarryBackground from './StarryBackground';
 import { X, Calendar, MapPin, DollarSign, Users, Share2, Navigation } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -34,8 +35,11 @@ const EventModal = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/80 p-0 md:p-4">
+      {/* Starry Background for dark mode */}
+      {isDark && <StarryBackground />}
+
       <div
-        className={`w-full md:max-w-3xl border-5 overflow-hidden max-h-[95vh] md:max-h-[90vh] overflow-y-auto transition-colors duration-300 ${isDark ? 'bg-black border-white' : 'bg-white border-black'
+        className={`w-full md:max-w-3xl border-5 overflow-hidden max-h-[95vh] md:max-h-[90vh] overflow-y-auto transition-colors duration-300 relative z-10 ${isDark ? 'bg-black border-white' : 'bg-white border-black'
           }`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -51,8 +55,8 @@ const EventModal = () => {
           <button
             onClick={closeEventModal}
             className={`absolute top-4 sm:top-6 right-4 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 border-3 flex items-center justify-center transition-all duration-200 ${isDark
-                ? 'bg-white text-black border-black hover:bg-black hover:text-white hover:border-white'
-                : 'bg-white text-black border-black hover:bg-black hover:text-white hover:border-white'
+              ? 'bg-white text-black border-black hover:bg-black hover:text-white hover:border-white'
+              : 'bg-white text-black border-black hover:bg-black hover:text-white hover:border-white'
               }`}
           >
             <X className="w-6 h-6 sm:w-8 sm:h-8" strokeWidth={3} />
@@ -134,12 +138,12 @@ const EventModal = () => {
             <button
               onClick={handleSave}
               className={`w-full py-4 sm:py-5 font-bold text-lg sm:text-xl uppercase tracking-wider border-5 transition-all duration-200 ${isSaved
-                  ? isDark
-                    ? 'bg-black text-white border-white hover:bg-white hover:text-black'
-                    : 'bg-white text-black border-black hover:bg-black hover:text-white'
-                  : isDark
-                    ? 'bg-white text-black border-white hover:bg-black hover:text-white'
-                    : 'bg-black text-white border-black hover:bg-white hover:text-black'
+                ? isDark
+                  ? 'bg-black text-white border-white hover:bg-white hover:text-black'
+                  : 'bg-white text-black border-black hover:bg-black hover:text-white'
+                : isDark
+                  ? 'bg-white text-black border-white hover:bg-black hover:text-white'
+                  : 'bg-black text-white border-black hover:bg-white hover:text-black'
                 }`}
             >
               {isSaved ? '✓ SAVED' : '❤ SAVE EVENT'}
@@ -149,8 +153,8 @@ const EventModal = () => {
               <button
                 onClick={handleShare}
                 className={`flex items-center justify-center space-x-2 py-3 sm:py-4 border-5 transition-all duration-200 font-bold uppercase ${isDark
-                    ? 'border-white text-white bg-black hover:bg-white hover:text-black'
-                    : 'border-black text-black bg-white hover:bg-black hover:text-white'
+                  ? 'border-white text-white bg-black hover:bg-white hover:text-black'
+                  : 'border-black text-black bg-white hover:bg-black hover:text-white'
                   }`}
               >
                 <Share2 className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
@@ -160,8 +164,8 @@ const EventModal = () => {
               <button
                 onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(selectedEvent.address)}`, '_blank')}
                 className={`flex items-center justify-center space-x-2 py-3 sm:py-4 border-5 transition-all duration-200 font-bold uppercase ${isDark
-                    ? 'border-white text-white bg-black hover:bg-white hover:text-black'
-                    : 'border-black text-black bg-white hover:bg-black hover:text-white'
+                  ? 'border-white text-white bg-black hover:bg-white hover:text-black'
+                  : 'border-black text-black bg-white hover:bg-black hover:text-white'
                   }`}
               >
                 <Navigation className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
